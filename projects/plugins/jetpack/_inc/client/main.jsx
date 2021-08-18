@@ -6,11 +6,11 @@ import { connect } from 'react-redux';
 import { withRouter, Prompt } from 'react-router-dom';
 import { __ } from '@wordpress/i18n';
 import { getRedirectUrl } from '@automattic/jetpack-components';
+import { ConnectUser } from '@automattic/jetpack-connection';
 
 /**
  * Internal dependencies
  */
-import AuthIframe from 'components/auth-iframe';
 import Masthead from 'components/masthead';
 import Navigation from 'components/navigation';
 import NavigationSettings from 'components/navigation-settings';
@@ -19,9 +19,10 @@ import {
 	getSiteConnectionStatus,
 	isCurrentUserLinked,
 	isSiteConnected,
-	isAuthorizingUserInPlace,
+	isConnectingUser,
 	isReconnectingSite,
 	reconnectSite,
+	getConnectUrl,
 } from 'state/connection';
 import {
 	setInitialState,
@@ -147,7 +148,7 @@ class Main extends React.Component {
 		return (
 			nextProps.siteConnectionStatus !== this.props.siteConnectionStatus ||
 			nextProps.isLinked !== this.props.isLinked ||
-			nextProps.isAuthorizingInPlace !== this.props.isAuthorizingInPlace ||
+			nextProps.isConnectingUser !== this.props.isConnectingUser ||
 			nextProps.location.pathname !== this.props.location.pathname ||
 			nextProps.searchTerm !== this.props.searchTerm ||
 			nextProps.rewindStatus !== this.props.rewindStatus ||
@@ -317,8 +318,8 @@ class Main extends React.Component {
 		);
 	}
 
-	shouldShowAuthIframe() {
-		return this.props.isAuthorizingInPlace;
+	shouldConnectUser() {
+		return this.props.isConnectingUser;
 	}
 
 	shouldBlurMainContent() {
@@ -344,14 +345,7 @@ class Main extends React.Component {
 					{ this.shouldShowRewindStatus() && <QueryRewindStatus /> }
 					<AdminNotices />
 					<JetpackNotices />
-					{ this.shouldShowAuthIframe() && (
-						<AuthIframe
-							{ ...( this.props.isReconnectingSite && {
-								scrollToIframe: false,
-								title: __( 'Reconnect to WordPress.com by approving the connection', 'jetpack' ),
-							} ) }
-						/>
-					) }
+					{ this.shouldConnectUser() && <ConnectUser connectUrl={ this.props.connectUrl } /> }
 					<Prompt
 						when={ this.props.areThereUnsavedSettings }
 						message={ this.handleRouterWillLeave }
@@ -372,7 +366,7 @@ export default connect(
 		return {
 			siteConnectionStatus: getSiteConnectionStatus( state ),
 			isLinked: isCurrentUserLinked( state ),
-			isAuthorizingInPlace: isAuthorizingUserInPlace( state ),
+			isConnectingUser: isConnectingUser( state ),
 			siteRawUrl: getSiteRawUrl( state ),
 			siteAdminUrl: getSiteAdminUrl( state ),
 			searchTerm: getSearchTerm( state ),
@@ -387,6 +381,7 @@ export default connect(
 			rewindStatus: getRewindStatus( state ),
 			currentVersion: getCurrentVersion( state ),
 			showRecommendations: showRecommendations( state ),
+			connectUrl: getConnectUrl( state ),
 		};
 	},
 	dispatch => ( {
