@@ -15,7 +15,7 @@
 	"author": "Automattic",
 	"scripts": {
 		"add-textdomain": "wpi18n addtextdomain --textdomain=jetpack --glob-pattern='!(node_modules|tests|tools|vendor){*.php,**/*.php}'",
-		"build": "pnpm run install-if-deps-outdated && pnpm run clean && pnpm run build-client && pnpm run build-php && pnpm run build-extensions && pnpm run build-search && pnpm run build-widget-visibility pnpm run build-asset-cdn-json",
+		"build": "pnpm run install-if-deps-outdated && pnpm run clean && pnpm run build-client && pnpm run build-php && pnpm run build-extensions && pnpm run build-search && pnpm run build-widget-visibility && pnpm run build-asset-cdn-json",
 		"build-asset-cdn-json": "php tools/build-asset-cdn-json.php",
 		"build-client": "gulp",
 		"build-color-schemes-wpcom": "GULP_ENV=wpcom gulp sass:color-schemes",
